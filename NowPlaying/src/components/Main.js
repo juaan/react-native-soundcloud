@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { fetchSongs } from '../actions';
 import Headerhome from './Header';
 import Songs from './Songs';
+import Player from './Player';
 
 class Main extends Component {
   constructor(props) {
@@ -21,6 +22,7 @@ class Main extends Component {
     return (
       <View>
         <Headerhome navigation={this.props.navigation} />
+        <Player />
         <Songs />
       </View>
     );
