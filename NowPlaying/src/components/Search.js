@@ -4,7 +4,7 @@ import { Text, TouchableOpacity, View } from 'react-native';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { searchSongs, emptySongs } from '../actions';
+import { fetchSongs, searchSongs, emptySongs } from '../actions';
 import Songs from './Songs';
 
 class Search extends React.Component {
@@ -26,12 +26,12 @@ class Search extends React.Component {
   }
 
   render() {
-    const { navigation } = this.props
+    const { emptySongs ,fetchSongs, navigation } = this.props
     return (
 
         <Container>
            <Header style={styles.header} searchBar rounded>
-              <TouchableOpacity onPress={() => {navigation.goBack()}}>
+              <TouchableOpacity onPress={() => {emptySongs(); fetchSongs(); navigation.goBack()}}>
                <Icon style={{ paddingTop:16, paddingRight:20, }} name="ios-arrow-dropleft" />
               </TouchableOpacity>
 
@@ -64,6 +64,7 @@ Search.propTypes = {
   navigation: PropTypes.object.isRequired,
   searchSongs: PropTypes.func.isRequired,
   emptySongs: PropTypes.func.isRequired,
+  fetchSongs: PropTypes.func.isRequired,
   songs: PropTypes.array.isRequired,
 }
 const styles = {
@@ -78,6 +79,7 @@ const stateProps = state => ({
 
 const dispatchProps = dispatch => ({
   searchSongs: (keyword) => dispatch(searchSongs(keyword)),
+  fetchSongs: () => dispatch(fetchSongs()),
   emptySongs: () => dispatch(emptySongs()),
 });
 
