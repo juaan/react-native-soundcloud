@@ -1,4 +1,4 @@
-import {FETCH_SONGS , SEARCH_SONGS, EMPTY_SONGS} from './constants';
+import {FETCH_SONGS , SEARCH_SONGS, EMPTY_SONGS , SELECT_SONGS } from './constants';
 
 
 export const fetchSongsSuccess = data => ({
@@ -28,6 +28,11 @@ export const searchSongs = (keyword) => (
     .catch(err => {console.log(err)})
   )
 )
+
+export const selectSongs = (song) => ({
+    type: SELECT_SONGS,
+    payload: song,
+})
 
 export const emptySongs = () => ({
   type: EMPTY_SONGS,

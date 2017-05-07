@@ -7,6 +7,9 @@ import {
 } from 'react-native';
 import { Icon } from 'native-base';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+
+import { selectSongs } from '../actions';
 
 class Song extends React.Component {
 
@@ -17,32 +20,24 @@ class Song extends React.Component {
   }
 
   render() {
-    const { song } = this.props
+    const { song,selectSongs } = this.props
     const duration = this.convertDuration(song.duration);
     return (
-      <View style={styles.container}>
-
-        <TouchableOpacity>
+      <TouchableOpacity style={styles.container} onPress={() => selectSongs(song)}>
           <Image
            style={{height:100, width: 100}}
            source={{uri: song.artwork_url ? song.artwork_url : song.user.avatar_url }}
           />
-        </TouchableOpacity>
-
           <View style={styles.detail}>
-            <TouchableOpacity>
-              <Text style={{ color: 'grey' }}> {song.user.username} </Text>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Text style={{ fontSize: 16, color: 'black' }}> {song.title} </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style= {{ flexDirection: 'row', padding: 10 }}>
+            <Text style={{ color: 'grey' }}> {song.user.username} </Text>
+            <Text style={{ fontSize: 16, color: 'black' }}> {song.title} </Text>
+            <View style= {{ flexDirection: 'row', padding: 10 }}>
               <Icon style={{fontSize: 25}} name="ios-headset-outline" />
               <Text style= {{ paddingLeft: 5, fontSize: 18}}>{song.playback_count}</Text>
-            </TouchableOpacity>
+            </View>
           </View>
         <Text> {duration} </Text>
-      </View>
+      </TouchableOpacity>
     )
   }
 }
@@ -65,6 +60,9 @@ const styles = {
 
 Song.propTypes = {
   song: PropTypes.object.isRequired,
+  selectSongs: PropTypes.func.isRequired,
 }
-
-export default Song
+const dispatchToProps = dispatch => ({
+  selectSongs: (song) => dispatch(selectSongs(song)),
+})
+export default connect(null,dispatchToProps)(Song);

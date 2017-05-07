@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 
 import { fetchSongs, searchSongs, emptySongs } from '../actions';
 import Songs from './Songs';
+import Player from './Player';
 
 class Search extends React.Component {
   constructor(props) {
@@ -50,6 +51,7 @@ class Search extends React.Component {
                   <Text>Search</Text>
               </Button>
            </Header>
+           <Player />
            {this.state.statusSearch ?
             <Songs />
             :

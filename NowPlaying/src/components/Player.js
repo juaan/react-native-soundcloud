@@ -3,13 +3,19 @@ import {
   View,
   TouchableOpacity,
   Text,
+  Image,
 } from 'react-native';
 import { Icon } from 'native-base';
-
 import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
 import RCTAudio from 'react-native-player';
+import { connect } from 'react-redux';
+
 
 class Player extends React.Component {
+  constructor(props) {
+    super(props);
+    this.selectSong = this.selectSong.bind(this)
+  }
 
   componentWillMount() {
     RCTDeviceEventEmitter.addListener('error',this.onError);
@@ -41,31 +47,61 @@ class Player extends React.Component {
     RCTAudio.stop()
   }
 
-  buttonClick() {
-    RCTAudio.prepare("https://api.soundcloud.com/tracks/321237853/stream?client_id=f4323c6f7c0cd73d2d786a2b1cdae80c", true)
+  selectSong() {
+    const { song } = this.props.player
+    console.log('ngeplay ni', song.id);
+    RCTAudio.prepare(`https://api.soundcloud.com/tracks/${song.id}/stream?client_id=f4323c6f7c0cd73d2d786a2b1cdae80c`, true)
   }
 
   render() {
+    const { player } = this.props;
     return (
       <View>
-        <TouchableOpacity
-         onPress={this.buttonClick}
-        >
-          <Text>Prepare</Text>
+      { player.song !== null ?
+
+        <TouchableOpacity onPress={this.selectSong()} style={styles.container}>
+          <Image
+            style={{ height:50, width: 50 }}
+            source={{ uri: player.song.artwork_url ? player.song.artwork_url : player.song.user.avatar_url }}
+          />
+          { player.statusPlaying !== true ?
+            <TouchableOpacity
+             onPress={this.playMusic}
+            >
+              <Icon name="ios-play-outline" />
+            </TouchableOpacity>
+            :
+            <TouchableOpacity
+             onPress={this.pause}
+            >
+              <Icon name="ios-pause-outline" />
+
+            </TouchableOpacity>
+          }
         </TouchableOpacity>
-        <TouchableOpacity
-         onPress={this.playMusic}
-        >
-          <Icon name="ios-play" />
-        </TouchableOpacity>
-        <TouchableOpacity
-         onPress={this.pause}
-        >
-          <Text>pause !!!</Text>
-        </TouchableOpacity>
+        :
+        <View />
+      }
       </View>
     )
   }
 }
 
-export default Player;
+const styles = {
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    height: 70,
+    padding: 10,
+    backgroundColor: '#F9690E',
+    borderTopWidth: 2,
+    borderTopColor: '#f50'
+  }
+}
+
+const stateToProps = state => ({
+  player: state.player,
+})
+
+
+export default connect(stateToProps, null)(Player);

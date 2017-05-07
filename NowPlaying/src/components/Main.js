@@ -20,7 +20,7 @@ class Main extends Component {
 
   render() {
     return (
-      <View>
+      <View style={styles.container}>
         <Headerhome navigation={this.props.navigation} />
         <Player />
         <Songs />
@@ -29,6 +29,12 @@ class Main extends Component {
   }
 }
 
+const styles = {
+  container: {
+    flex: 1,
+    flexDirection: 'column'
+  },
+}
 const dispatcProps = dispatch => ({
   fetchSongs: () => dispatch(fetchSongs()),
 })
