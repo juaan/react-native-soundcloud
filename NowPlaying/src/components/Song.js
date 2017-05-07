@@ -8,22 +8,52 @@ import {
 import { Icon } from 'native-base';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
+import RCTAudio from 'react-native-player';
 
 import { selectSongs } from '../actions';
 
 class Song extends React.Component {
+  constructor(props) {
+    super(props);
+    this.selectSong = this.selectSong.bind(this)
+  }
 
   convertDuration(time) {
     const minutes = Math.floor(time / 60000);
     const seconds = ((time % 60000) / 1000).toFixed(0);
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
   }
+  componentWillMount() {
+    RCTDeviceEventEmitter.addListener('error',this.onError);
+    RCTDeviceEventEmitter.addListener('end',this.onEnd);
+    RCTDeviceEventEmitter.addListener('ready',this.onReady);
+  }
+
+  onError(err) {
+    console.log(err);
+  }
+
+  onEnd() {
+    console.log("end");
+  }
+
+  onReady () {
+    console.log('on ready...')
+  }
+
+
+  selectSong(song) {
+    this.props.selectSongs(song);
+    RCTAudio.prepare(`https://api.soundcloud.com/tracks/${song.id}/stream?client_id=f4323c6f7c0cd73d2d786a2b1cdae80c`, true);
+
+  }
 
   render() {
-    const { song,selectSongs } = this.props
+    const { song } = this.props
     const duration = this.convertDuration(song.duration);
     return (
-      <TouchableOpacity style={styles.container} onPress={() => selectSongs(song)}>
+      <TouchableOpacity style={styles.container} onPress={() => this.selectSong(song)}>
           <Image
            style={{height:100, width: 100}}
            source={{uri: song.artwork_url ? song.artwork_url : song.user.avatar_url }}

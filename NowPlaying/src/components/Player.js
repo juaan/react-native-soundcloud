@@ -10,48 +10,37 @@ import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
 import RCTAudio from 'react-native-player';
 import { connect } from 'react-redux';
 
+import {
+  pauseSongs,
+  stopSongs,
+  playSongs,
+} from '../actions';
 
 class Player extends React.Component {
   constructor(props) {
     super(props);
-    this.selectSong = this.selectSong.bind(this)
-  }
 
-  componentWillMount() {
-    RCTDeviceEventEmitter.addListener('error',this.onError);
-    RCTDeviceEventEmitter.addListener('end',this.onEnd);
-    RCTDeviceEventEmitter.addListener('ready',this.onReady);
-  }
-
-  onError(err) {
-    console.log(err);
-  }
-
-  onEnd() {
-    console.log("end");
-  }
-
-  onReady () {
-    console.log('on ready...')
+    this.playMusic = this.playMusic.bind(this)
+    this.pause = this.pause.bind(this)
+    this.stop = this.stop.bind(this)
   }
 
   playMusic() {
-    RCTAudio.start()
+    this.props.playSongs();
+    RCTAudio.start();
   }
 
   pause() {
-    RCTAudio.pause()
+    this.props.pauseSongs();
+    RCTAudio.pause();
   }
 
   stop() {
-    RCTAudio.stop()
+    this.props.stopSongs();
+    RCTAudio.stop();
   }
 
-  selectSong() {
-    const { song } = this.props.player
-    console.log('ngeplay ni', song.id);
-    RCTAudio.prepare(`https://api.soundcloud.com/tracks/${song.id}/stream?client_id=f4323c6f7c0cd73d2d786a2b1cdae80c`, true)
-  }
+
 
   render() {
     const { player } = this.props;
@@ -59,25 +48,38 @@ class Player extends React.Component {
       <View>
       { player.song !== null ?
 
-        <TouchableOpacity onPress={this.selectSong()} style={styles.container}>
+        <TouchableOpacity style={styles.container}>
           <Image
-            style={{ height:50, width: 50 }}
+            style={{ width: '30%' }}
             source={{ uri: player.song.artwork_url ? player.song.artwork_url : player.song.user.avatar_url }}
           />
+          <View style={{ flexDirection:'column', paddingLeft: 15 }}>
+            <Text style={{ color: 'ghostwhite' }}> {player.song.user.username} </Text>
+            <Text style={{ color: 'white' }}> {player.song.title} </Text>
+
           { player.statusPlaying !== true ?
             <TouchableOpacity
              onPress={this.playMusic}
             >
-              <Icon name="ios-play-outline" />
+              <Icon style={styles.icon} name="ios-play" />
             </TouchableOpacity>
             :
-            <TouchableOpacity
-             onPress={this.pause}
-            >
-              <Icon name="ios-pause-outline" />
+            <View style={{ flexDirection:'row'}}>
+              <TouchableOpacity
+               onPress={this.stop}
+              >
+                <Icon style={styles.icon} name="ios-square" />
 
-            </TouchableOpacity>
+              </TouchableOpacity>
+              <TouchableOpacity
+               onPress={this.pause}
+              >
+                <Icon style={styles.icon} name="ios-pause" />
+
+              </TouchableOpacity>
+            </View>
           }
+          </View>
         </TouchableOpacity>
         :
         <View />
@@ -90,12 +92,15 @@ class Player extends React.Component {
 const styles = {
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: 70,
-    padding: 10,
+    justifyContent: 'space-around',
+    height: 'auto',
+    padding: 15,
     backgroundColor: '#F9690E',
-    borderTopWidth: 2,
-    borderTopColor: '#f50'
+    elevation: 10,
+  },
+  icon: {
+    color: 'white',
+    padding: 10,
   }
 }
 
@@ -103,5 +108,10 @@ const stateToProps = state => ({
   player: state.player,
 })
 
+const dispatchToProps = dispatch => ({
+  pauseSongs: () => dispatch(pauseSongs()),
+  stopSongs: () => dispatch(stopSongs()),
+  playSongs: () => dispatch(playSongs()),
+})
 
-export default connect(stateToProps, null)(Player);
+export default connect(stateToProps, dispatchToProps)(Player);

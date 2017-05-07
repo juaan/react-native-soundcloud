@@ -1,4 +1,12 @@
-import {FETCH_SONGS , SEARCH_SONGS, EMPTY_SONGS , SELECT_SONGS } from './constants';
+import {
+  FETCH_SONGS,
+  SEARCH_SONGS,
+  EMPTY_SONGS,
+  SELECT_SONGS,
+  PAUSE_SONGS,
+  PLAY_SONGS,
+  STOP_SONGS
+ } from './constants';
 
 
 export const fetchSongsSuccess = data => ({
@@ -37,4 +45,19 @@ export const selectSongs = (song) => ({
 export const emptySongs = () => ({
   type: EMPTY_SONGS,
   payload: [],
+})
+
+export const pauseSongs = () => ({
+  type: PAUSE_SONGS,
+  payload: 'paused',
+})
+
+export const stopSongs = () => ({
+  type: STOP_SONGS,
+  payload: 'stopped',
+})
+
+export const playSongs = () => ({
+  type: PLAY_SONGS,
+  payload: 'played',
 })
