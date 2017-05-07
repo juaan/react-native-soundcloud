@@ -3,12 +3,14 @@ import {
   PLAY_SONGS,
   PAUSE_SONGS,
   STOP_SONGS,
+  NEXT_SONGS,
 } from '../actions/constants';
 
 const initialState = {
   statusPlaying: false,
   song: null,
   msg: '',
+  playList: []
 }
 const playerReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -16,7 +18,8 @@ const playerReducer = (state = initialState, action) => {
       const newState = {
         ...state,
         statusPlaying: true,
-        song: action.payload,
+        song: action.payload.song,
+        playList: action.payload.songs,
       }
       return newState;
     }
@@ -42,6 +45,15 @@ const playerReducer = (state = initialState, action) => {
         msg: action.payload,
       }
       return newState
+    }
+    case NEXT_SONGS: {
+      console.log(action.payload);
+      const newState = {
+        ...state,
+        song: action.payload,
+        msg: 'next',
+      }
+      return newState;
     }
 
     default: return state

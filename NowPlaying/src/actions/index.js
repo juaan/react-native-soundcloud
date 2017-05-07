@@ -5,7 +5,8 @@ import {
   SELECT_SONGS,
   PAUSE_SONGS,
   PLAY_SONGS,
-  STOP_SONGS
+  STOP_SONGS,
+  NEXT_SONGS
  } from './constants';
 
 
@@ -37,9 +38,9 @@ export const searchSongs = (keyword) => (
   )
 )
 
-export const selectSongs = (song) => ({
+export const selectSongs = (song,songs) => ({
     type: SELECT_SONGS,
-    payload: song,
+    payload: {song, songs},
 })
 
 export const emptySongs = () => ({
@@ -61,3 +62,22 @@ export const playSongs = () => ({
   type: PLAY_SONGS,
   payload: 'played',
 })
+
+const nextSongsPlaying = (song) => ({
+  type: NEXT_SONGS,
+  payload: song,
+})
+
+export const nextSongs = () => (
+  (dispatch, getState) => {
+    const { player } = getState();
+    console.log('player nih', player);
+    const currentIdx = player.playList.findIndex( x => player.song.id === x.id);
+    if ((currentIdx + 1) < (player.playList.length - 1)) {
+      const nextSong = player.playList[currentIdx+1];
+      return dispatch(nextSongsPlaying(nextSong));
+    } else {
+      return dispatch(emptySongs());
+    }
+  }
+)

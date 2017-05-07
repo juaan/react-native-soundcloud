@@ -11,12 +11,14 @@ import { connect } from 'react-redux';
 import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
 import RCTAudio from 'react-native-player';
 
-import { selectSongs } from '../actions';
+import { selectSongs,nextSongs } from '../actions';
 
 class Song extends React.Component {
   constructor(props) {
     super(props);
-    this.selectSong = this.selectSong.bind(this)
+    this.selectSong = this.selectSong.bind(this);
+    this.nextSong = this.nextSong.bind(this);
+    this.onEnd = this.onEnd.bind(this);
   }
 
   convertDuration(time) {
@@ -25,6 +27,7 @@ class Song extends React.Component {
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
   }
   componentWillMount() {
+    this.nextSong();
     RCTDeviceEventEmitter.addListener('error',this.onError);
     RCTDeviceEventEmitter.addListener('end',this.onEnd);
     RCTDeviceEventEmitter.addListener('ready',this.onReady);
@@ -36,21 +39,24 @@ class Song extends React.Component {
 
   onEnd() {
     console.log("end");
+    this.props.nextSongs();
   }
 
   onReady () {
-    console.log('on ready...')
+    console.log('on ready...');
   }
 
-
+  nextSong() {
+    this.selectSong(this.props.player.song);
+  }
   selectSong(song) {
-    this.props.selectSongs(song);
     RCTAudio.prepare(`https://api.soundcloud.com/tracks/${song.id}/stream?client_id=f4323c6f7c0cd73d2d786a2b1cdae80c`, true);
+    this.props.selectSongs(song,this.props.songs);
 
   }
 
   render() {
-    const { song } = this.props
+    const { song, songs } = this.props
     const duration = this.convertDuration(song.duration);
     return (
       <TouchableOpacity style={styles.container} onPress={() => this.selectSong(song)}>
@@ -92,7 +98,15 @@ Song.propTypes = {
   song: PropTypes.object.isRequired,
   selectSongs: PropTypes.func.isRequired,
 }
-const dispatchToProps = dispatch => ({
-  selectSongs: (song) => dispatch(selectSongs(song)),
+
+const stateToProps = state => ({
+  songs: state.songs,
+  player: state.player
 })
-export default connect(null,dispatchToProps)(Song);
+
+const dispatchToProps = dispatch => ({
+  selectSongs: (song,songs) => dispatch(selectSongs(song,songs)),
+  nextSongs: () => dispatch(nextSongs()),
+})
+
+export default connect(stateToProps,dispatchToProps)(Song);

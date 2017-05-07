@@ -6,7 +6,6 @@ import {
   Image,
 } from 'react-native';
 import { Icon } from 'native-base';
-import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
 import RCTAudio from 'react-native-player';
 import { connect } from 'react-redux';
 
