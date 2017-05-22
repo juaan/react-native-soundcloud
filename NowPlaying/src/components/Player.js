@@ -6,13 +6,15 @@ import {
   Image,
 } from 'react-native';
 import { Icon } from 'native-base';
+import PropTypes from 'prop-types';
 import RCTAudio from 'react-native-player';
 import { connect } from 'react-redux';
-
+import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
 import {
   pauseSongs,
   stopSongs,
   playSongs,
+  nextSongs
 } from '../actions';
 
 class Player extends React.Component {
@@ -22,6 +24,21 @@ class Player extends React.Component {
     this.playMusic = this.playMusic.bind(this)
     this.pause = this.pause.bind(this)
     this.stop = this.stop.bind(this)
+    this.onEnd = this.onEnd.bind(this);
+    this.onReady = this.onReady.bind(this);
+
+  }
+  componentWillMount() {
+    RCTDeviceEventEmitter.addListener('error',this.onError);
+    RCTDeviceEventEmitter.addListener('end',this.onEnd);
+    RCTDeviceEventEmitter.addListener('ready',this.onReady);
+  }
+
+  componentDidUpdate(prevProps) {
+    if(this.props.player.song !== null && prevProps.player.song !== this.props.player.song) {
+      console.log('mantab');
+      this.startSong();
+    }
   }
 
   playMusic() {
@@ -37,6 +54,24 @@ class Player extends React.Component {
   stop() {
     this.props.stopSongs();
     RCTAudio.stop();
+  }
+
+  onError(err) {
+    console.log(err);
+  }
+
+  onEnd() {
+    console.log('end');
+    this.props.nextSongs();
+  }
+
+  onReady () {
+    console.log('start');
+  }
+
+  startSong() {
+    const {song} = this.props.player;
+    RCTAudio.prepare(`${song.uri}/stream?client_id=f4323c6f7c0cd73d2d786a2b1cdae80c`, true);
   }
 
 
@@ -103,6 +138,14 @@ const styles = {
   }
 }
 
+Player.propTypes = {
+
+  player: PropTypes.object.isRequired,
+  stopSongs: PropTypes.func.isRequired,
+  playSongs: PropTypes.func.isRequired,
+  pauseSongs: PropTypes.func.isRequired,
+}
+
 const stateToProps = state => ({
   player: state.player,
 })
@@ -111,6 +154,7 @@ const dispatchToProps = dispatch => ({
   pauseSongs: () => dispatch(pauseSongs()),
   stopSongs: () => dispatch(stopSongs()),
   playSongs: () => dispatch(playSongs()),
+  nextSongs: () => dispatch(nextSongs()),
 })
 
 export default connect(stateToProps, dispatchToProps)(Player);

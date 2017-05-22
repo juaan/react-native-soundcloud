@@ -3,22 +3,20 @@ import {
   View,
   Text,
   Image,
-  TouchableOpacity
+  TouchableOpacity,
+  Dimensions
 } from 'react-native';
 import { Icon } from 'native-base';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import RCTDeviceEventEmitter from 'RCTDeviceEventEmitter'
-import RCTAudio from 'react-native-player';
-
 import { selectSongs,nextSongs } from '../actions';
+
+const {height, width} = Dimensions.get('window');
 
 class Song extends React.Component {
   constructor(props) {
     super(props);
     this.selectSong = this.selectSong.bind(this);
-    this.nextSong = this.nextSong.bind(this);
-    this.onEnd = this.onEnd.bind(this);
   }
 
   convertDuration(time) {
@@ -26,42 +24,18 @@ class Song extends React.Component {
     const seconds = ((time % 60000) / 1000).toFixed(0);
     return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
   }
-  componentWillMount() {
-    this.nextSong();
-    RCTDeviceEventEmitter.addListener('error',this.onError);
-    RCTDeviceEventEmitter.addListener('end',this.onEnd);
-    RCTDeviceEventEmitter.addListener('ready',this.onReady);
-  }
 
-  onError(err) {
-    console.log(err);
-  }
-
-  onEnd() {
-    console.log("end");
-    this.props.nextSongs();
-  }
-
-  onReady () {
-    console.log('on ready...');
-  }
-
-  nextSong() {
-    this.selectSong(this.props.player.song);
-  }
   selectSong(song) {
-    RCTAudio.prepare(`https://api.soundcloud.com/tracks/${song.id}/stream?client_id=f4323c6f7c0cd73d2d786a2b1cdae80c`, true);
     this.props.selectSongs(song,this.props.songs);
-
   }
 
   render() {
-    const { song, songs } = this.props
+    const { song } = this.props
     const duration = this.convertDuration(song.duration);
     return (
       <TouchableOpacity style={styles.container} onPress={() => this.selectSong(song)}>
           <Image
-           style={{height:100, width: 100}}
+           style={{height:height * 0.2, width: width * 0.2}}
            source={{uri: song.artwork_url ? song.artwork_url : song.user.avatar_url }}
           />
           <View style={styles.detail}>
@@ -97,6 +71,8 @@ const styles = {
 Song.propTypes = {
   song: PropTypes.object.isRequired,
   selectSongs: PropTypes.func.isRequired,
+  songs: PropTypes.array.isRequired,
+  player: PropTypes.object.isRequired,
 }
 
 const stateToProps = state => ({

@@ -73,11 +73,8 @@ export const nextSongs = () => (
     const { player } = getState();
     console.log('player nih', player);
     const currentIdx = player.playList.findIndex( x => player.song.id === x.id);
-    if ((currentIdx + 1) < (player.playList.length - 1)) {
-      const nextSong = player.playList[currentIdx+1];
-      return dispatch(nextSongsPlaying(nextSong));
-    } else {
-      return dispatch(emptySongs());
-    }
+    const nextSong = player.playList[currentIdx+1];
+    return dispatch(nextSongsPlaying(nextSong));
+
   }
 )
