@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  Dimensions
 } from 'react-native';
 import { Icon } from 'native-base';
 import PropTypes from 'prop-types';
@@ -16,6 +17,8 @@ import {
   playSongs,
   nextSongs
 } from '../actions';
+
+const {width} = Dimensions.get('window');
 
 class Player extends React.Component {
   constructor(props) {
@@ -82,9 +85,9 @@ class Player extends React.Component {
       <View>
       { player.song !== null ?
 
-        <TouchableOpacity style={styles.container}>
+        <View style={styles.container}>
           <Image
-            style={{ width: '30%' }}
+            style={{ width: width * 0.2 }}
             source={{ uri: player.song.artwork_url ? player.song.artwork_url : player.song.user.avatar_url }}
           />
           <View style={{ flexDirection:'column', paddingLeft: 15 }}>
@@ -114,7 +117,7 @@ class Player extends React.Component {
             </View>
           }
           </View>
-        </TouchableOpacity>
+        </View>
         :
         <View />
       }
@@ -126,7 +129,7 @@ class Player extends React.Component {
 const styles = {
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-start',
     height: 'auto',
     padding: 15,
     backgroundColor: '#F9690E',
