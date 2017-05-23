@@ -11,7 +11,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { selectSongs,nextSongs } from '../actions';
 
-const {height, width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 class Song extends React.Component {
   constructor(props) {
@@ -35,7 +35,7 @@ class Song extends React.Component {
     return (
       <TouchableOpacity style={styles.container} onPress={() => this.selectSong(song)}>
           <Image
-           style={{height:height * 0.2, width: width * 0.2}}
+           style={{ width: width * 0.3}}
            source={{uri: song.artwork_url ? song.artwork_url : song.user.avatar_url }}
           />
           <View style={styles.detail}>
